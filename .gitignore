@@ -1,0 +1,4 @@
+output/*
+buildcache/*
+bin/*
+build/setting.json

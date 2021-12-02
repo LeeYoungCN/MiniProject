@@ -1,4 +1,5 @@
 output/*
 buildcache/*
 bin/*
-build/setting.json
+build/
+script/public_config.sh

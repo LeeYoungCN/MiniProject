@@ -1,8 +1,8 @@
 project(MiniProject)
 cmake_minimum_required(VERSION 3.4.1)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake)
-set(BUILDCACHE_PATH         ${CMAKE_SOURCE_DIR}/build)
-set(EXECUTABLE_OUTPUT_PATH  ${CMAKE_SOURCE_DIR}/out)
+set(BUILDCACHE_PATH         ${CMAKE_SOURCE_DIR}/buildcache)
+set(EXECUTABLE_OUTPUT_PATH  ${CMAKE_SOURCE_DIR}/output)
 set(LIBRARY_OUTPUT_PATH     ${CMAKE_SOURCE_DIR}/lib)
 
 set(CMAKE_CXX_STANDARD 17)

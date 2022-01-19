@@ -44,7 +44,10 @@
                 "cwd": "${workspaceFolder}/script/"
             },
             "command": "./cmake_run.sh",
-            "args": [],
+            "args": [
+                "test.txt",
+                "test1.txt"
+            ],
             "detail": "运行程序",
             "problemMatcher": [
                 "$gcc"

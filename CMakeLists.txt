@@ -7,7 +7,8 @@ set(LIBRARY_OUTPUT_PATH     ${CMAKE_SOURCE_DIR}/lib)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(CODE_PATH            ${CMAKE_SOURCE_DIR}/code)
+set(CODE_PATH           ${CMAKE_SOURCE_DIR}/code)
+set(PUBLIC_FUNC_PATH    ${CMAKE_SOURCE_DIR}/public_func)
 set(GOOGLE_TEST_PATH    ${CMAKE_SOURCE_DIR}/lib/google_test)
 
 set(CMAKE_C_FLAGS   "-Wall -g")
@@ -19,6 +20,7 @@ include_directories(${GOOGLE_TEST_PATH}/inc)
 
 add_executable(${TARGET_NAME})
 add_subdirectory(${CODE_PATH})
+add_subdirectory(${PUBLIC_FUNC_PATH})
 
 file(GLOB GTEST_LIBS ${GTEST_LIB_PATH}/*.a)
 

@@ -5,32 +5,21 @@
 #include <regex>
 #include <map>
 #include <vector>
-
+#include "public_def.h"
 using namespace std;
 
-struct FileInfoSt {
-    string priority;
-    string fileNum;
-    string owner;
-    string group;
-    string fileSize;
-    string month;
-    string day;
-    string time;
-    string fileName;
-};
-
-struct MaxSizeInfoSt {
-    size_t dirSize;
-    size_t prioritySize;
-    size_t fileNumSize;
-    size_t ownerSize;
-    size_t groupSize;
-    size_t fileSizeSize;
-    size_t monthSize;
-    size_t daySize;
-    size_t timeSize;
-    size_t fileNameSize;
+enum FileParaIndex : UINT32 {
+    DIRECTORY,
+    PRIORITY,
+    NUM,
+    OWNER,
+    GROUP,
+    SIZE,
+    MONTH,
+    DAY,
+    TIME,
+    NAME,
+    INDEX_CNT
 };
 
 class FilePriority {
@@ -40,12 +29,11 @@ public:
     void Run();
 private:
     void ReadOldFile();
-    void GetFileStrInfo(string &fileStr, FileInfoSt &fileInfo);
-    void RefreshSizeInfo(const FileInfoSt &fileInfo);
+    void GetFileStrInfo(const string &fileStr, vector<string> &fileInfo);
+    void RefreshSizeInfo(const vector<string> &fileInfo);
 
     void WriteNewFile();
-    void WriteLine(const string &dirStr, const FileInfoSt &fileInfoSt);
-    string GetStringWithSpace(const string &input, const size_t maxLen);
+    void WriteLine(const vector<string> &fileInfo);
     // 文件名
     string oldFileName;
     string newFileName;
@@ -56,8 +44,9 @@ private:
     regex folderPattern{".*:$"};                   // 路径模式
     regex filePattern{"^.{1}([-r][-w][-x]){3}.*"}; // 文件模式
     //
-    map<string, vector<FileInfoSt>> dirFileMap;
-    MaxSizeInfoSt maxSizeInfoSt = {0};
+    vector<vector<string>> fileInfoVec;
+    vector<UINT64> maxSizeInfo = vector<UINT64>(FileParaIndex::INDEX_CNT);
+    vector<string> titleInfo;
 };
 
 #endif // FILE_PRIORITY_H

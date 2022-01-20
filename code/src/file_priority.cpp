@@ -1,21 +1,37 @@
 #include "file_priority.h"
+#include "string_public_func.h"
 
-const int PRIORITY_LEN = 10;
+using namespace UTF8;
 
-string GetNextStr(string::iterator &it, string::iterator &end)
-{
-    string retStr = "";
-    while (*it == ' ') {
-        it++;
-    }
-    while (*it != ' ' && it != end) {
-        retStr += *it++;
-    }
-    return retStr;
-}
+const char SPLIT_CHAR = ' ';
+const UINT32 SUFFIX_SPACE_NUM = 1;
+const string TITLE_INFO[FileParaIndex::INDEX_CNT] = {
+    "文件地址",
+    "文件权限",
+    "文件数量",
+    "文件Owner",
+    "文件属组",
+    "文件大小",
+    "修改时间-月",
+    "修改时间-日",
+    "修改时间-时分",
+    "文件名称"
+};
+
+const UINT32 PRINT_ORDER[] = {
+    FileParaIndex::DIRECTORY,
+    FileParaIndex::PRIORITY,
+    FileParaIndex::OWNER,
+    FileParaIndex::GROUP,
+    FileParaIndex::NAME
+};
 
 FilePriority::FilePriority(const char *oldFileName, const char *newFileName) :
-    oldFileName(string(oldFileName)), newFileName(string(newFileName)) {}
+    oldFileName(string(oldFileName)), newFileName(string(newFileName))
+{
+    titleInfo = vector<string>(TITLE_INFO, TITLE_INFO + FileParaIndex::INDEX_CNT);
+    RefreshSizeInfo(titleInfo);
+}
 
 FilePriority::~FilePriority()
 {
@@ -36,82 +52,72 @@ void FilePriority::Run()
 void FilePriority::ReadOldFile()
 {
     oldFile.open(oldFileName.c_str(), ios::in);
-
+    if (!oldFile.is_open()) {
+        cout << oldFileName << " open fail!" << endl;
+        return;
+    }
     string tmpStr;
     string tmpFolder;
     while(getline(oldFile, tmpStr)) {
         if (regex_match(tmpStr, folderPattern)) {
             tmpStr.pop_back();
+            if (tmpStr.back() == '/') {
+                tmpStr.pop_back();
+            }
             tmpFolder = tmpStr;
-            maxSizeInfoSt.dirSize = max(maxSizeInfoSt.dirSize, tmpFolder.size());
         }
         if (regex_match(tmpStr, filePattern)) {
-            FileInfoSt fileInfo;
+            vector<string> fileInfo(FileParaIndex::INDEX_CNT);
+            fileInfo[FileParaIndex::DIRECTORY] = tmpFolder;
             GetFileStrInfo(tmpStr, fileInfo);
-            dirFileMap[tmpFolder].emplace_back(fileInfo);
+            fileInfoVec.emplace_back(fileInfo);
             RefreshSizeInfo(fileInfo);
         }
     }
-
+    cout << oldFileName << " read OK!" << endl;
     oldFile.close();
 }
 
-void FilePriority::GetFileStrInfo(string &fileStr, FileInfoSt &fileInfo)
+void FilePriority::GetFileStrInfo(const string &fileStr, vector<string> &fileInfo)
 {
-    string::iterator it = fileStr.begin();
-    string::iterator end = fileStr.end();
-
-    fileInfo.priority   = GetNextStr(it, end);
-    fileInfo.fileNum    = GetNextStr(it, end);
-    fileInfo.owner      = GetNextStr(it, end);
-    fileInfo.group      = GetNextStr(it, end);
-    fileInfo.fileSize   = GetNextStr(it, end);
-    fileInfo.month      = GetNextStr(it, end);
-    fileInfo.day        = GetNextStr(it, end);
-    fileInfo.time       = GetNextStr(it, end);
-    fileInfo.fileName   = GetNextStr(it, end);
+    string::const_iterator it = fileStr.begin();
+    string::const_iterator end = fileStr.end();
+    for (UINT32 i = FileParaIndex::PRIORITY; i < FileParaIndex::INDEX_CNT; i++) {
+        fileInfo[i] = GetNextStr(it, end, SPLIT_CHAR);
+    }
+    fileInfo[FileParaIndex::NAME] = fileInfo[FileParaIndex::DIRECTORY] + '/' + fileInfo[FileParaIndex::NAME];
 }
 
-void FilePriority::RefreshSizeInfo(const FileInfoSt &fileInfo)
+void FilePriority::RefreshSizeInfo(const vector<string> &fileInfo)
 {
-    maxSizeInfoSt.prioritySize  = max(maxSizeInfoSt.prioritySize,   fileInfo.priority.size());
-    maxSizeInfoSt.fileNumSize   = max(maxSizeInfoSt.fileNumSize,    fileInfo.fileNum.size());
-    maxSizeInfoSt.ownerSize     = max(maxSizeInfoSt.ownerSize,      fileInfo.owner.size());
-    maxSizeInfoSt.groupSize     = max(maxSizeInfoSt.groupSize,      fileInfo.group.size());
-    maxSizeInfoSt.fileSizeSize  = max(maxSizeInfoSt.fileSizeSize,   fileInfo.fileSize.size());
-    maxSizeInfoSt.monthSize     = max(maxSizeInfoSt.monthSize,      fileInfo.month.size());
-    maxSizeInfoSt.daySize       = max(maxSizeInfoSt.daySize,        fileInfo.day.size());
-    maxSizeInfoSt.timeSize      = max(maxSizeInfoSt.timeSize,       fileInfo.time.size());
-    maxSizeInfoSt.fileNameSize  = max(maxSizeInfoSt.fileNameSize,   fileInfo.fileName.size());
+    for (UINT32 i = FileParaIndex::DIRECTORY; i < FileParaIndex::INDEX_CNT; i++) {
+        maxSizeInfo[i] = max(maxSizeInfo[i], GetStrSpaceSize(fileInfo[i]));
+    }
 }
 
 void FilePriority::WriteNewFile()
 {
     newFile.open(newFileName,  ios::trunc|ios::out);
-
-    for (const auto&[dirStr, fileInfoList] : dirFileMap) {
-        for (const auto &fileInfo : fileInfoList) {
-            WriteLine(dirStr, fileInfo);
-        }
+        if (!newFile.is_open()) {
+        cout << newFileName << " open fail!" << endl;
+        return;
     }
-
+    WriteLine(titleInfo);
+    for (const auto& fileInfo : fileInfoVec) {
+        WriteLine(fileInfo);
+    }
+    cout << newFileName << " write OK!" << endl;
     newFile.close();
 }
 
-void FilePriority::WriteLine(const string &dirStr, const FileInfoSt &fileInfoSt)
+void FilePriority::WriteLine(const vector<string> &fileInfo)
 {
-    newFile << GetStringWithSpace(fileInfoSt.priority,  maxSizeInfoSt.prioritySize);
-    newFile << GetStringWithSpace(fileInfoSt.fileNum,   maxSizeInfoSt.fileNumSize);
-    newFile << GetStringWithSpace(fileInfoSt.owner,     maxSizeInfoSt.ownerSize);
-    newFile << GetStringWithSpace(fileInfoSt.group,     maxSizeInfoSt.groupSize);
-    newFile << GetStringWithSpace(fileInfoSt.fileSize,  maxSizeInfoSt.fileSizeSize);
-    newFile << GetStringWithSpace(fileInfoSt.month,     maxSizeInfoSt.monthSize);
-    newFile << GetStringWithSpace(fileInfoSt.day,       maxSizeInfoSt.daySize);
-    newFile << GetStringWithSpace(fileInfoSt.time,      maxSizeInfoSt.timeSize);
-    newFile << dirStr + "/" + fileInfoSt.fileName << endl;
-}
-
-string FilePriority::GetStringWithSpace(const string &input, const size_t maxLen)
-{
-    return input + string(maxLen - input.size() + 1, ' ');
+    UINT32 arrSize = ITEM_OF(PRINT_ORDER);
+    UINT32 index = 0;
+    for (UINT32 i = 0; i < arrSize - 1; i++) {
+        index = PRINT_ORDER[i];
+        newFile << GetStrWithSpace(fileInfo[index], maxSizeInfo[index], SUFFIX_SPACE_NUM);
+    }
+    index = PRINT_ORDER[arrSize - 1];
+    newFile << fileInfo[index] << endl;
 }

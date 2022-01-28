@@ -19,6 +19,7 @@ enum FileParaIndex : UINT32 {
     DAY,
     TIME,
     NAME,
+    FULL_NAME,
     INDEX_CNT
 };
 

@@ -16,6 +16,7 @@ const string TITLE_INFO[FileParaIndex::INDEX_CNT] = {
     "修改时间-日",
     "修改时间-时分",
     "文件名称"
+    "文件全称"
 };
 
 const UINT32 PRINT_ORDER[] = {
@@ -23,7 +24,7 @@ const UINT32 PRINT_ORDER[] = {
     FileParaIndex::PRIORITY,
     FileParaIndex::OWNER,
     FileParaIndex::GROUP,
-    FileParaIndex::NAME
+    FileParaIndex::FULL_NAME
 };
 
 FilePriority::FilePriority(const char *oldFileName, const char *newFileName) :
@@ -82,10 +83,10 @@ void FilePriority::GetFileStrInfo(const string &fileStr, vector<string> &fileInf
 {
     string::const_iterator it = fileStr.begin();
     string::const_iterator end = fileStr.end();
-    for (UINT32 i = FileParaIndex::PRIORITY; i < FileParaIndex::INDEX_CNT; i++) {
+    for (UINT32 i = FileParaIndex::PRIORITY; i < FileParaIndex::FULL_NAME; i++) {
         fileInfo[i] = GetNextStr(it, end, SPLIT_CHAR);
     }
-    fileInfo[FileParaIndex::NAME] = fileInfo[FileParaIndex::DIRECTORY] + '/' + fileInfo[FileParaIndex::NAME];
+    fileInfo[FileParaIndex::FULL_NAME] = fileInfo[FileParaIndex::DIRECTORY] + '/' + fileInfo[FileParaIndex::NAME];
 }
 
 void FilePriority::RefreshSizeInfo(const vector<string> &fileInfo)

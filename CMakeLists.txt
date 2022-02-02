@@ -18,8 +18,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_FLAGS   "-Wall -g")
 set(CMAKE_CXX_FLAGS "-Wall -g")
 
-include_directories(${PLATFORM_PATH_INC_PUBLIC})
-include_directories(${PLATFORM_PATH_INC_GTEST})
+include_directories(${PLATFORM_INC_PUBLIC_PATH})
+include_directories(${PLATFORM_INC_GTEST_PATH})
 
 add_executable(${TARGET_NAME})
 add_subdirectory(${CODE_PATH})

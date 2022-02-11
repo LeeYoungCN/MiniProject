@@ -55,7 +55,35 @@ function git_clone_repository()
     delete_backup "${repository}"
 }
 
-git_clone_repository "git@github.com:LeeYoungCN/Platform.git"
+function get_platform()
+{
+    ssh_path="${1}"
+    repository=${ssh_path#*/}
+    repository=${repository%*.git}
+    zip_file="${repository}-master.zip"
+    backup_file "${repository}"
+    git clone "${ssh_path}"
+    if [ $? -eq 0 ]; then
+        chmod -R 777 ${repository}
+        delete_backup "${repository}"
+        return 0
+    fi
+    if [ ! -e ${zip_file} ];then
+        reset_from_backup "${repository}"
+        exit
+    fi
+    unzip -o ${zip_file}
+    if [ $? -ne 0 ]; then
+        reset_from_backup "${repository}"
+        exit
+    else
+        mv -f "${zip_file}" "${repository}"
+        chmod -R 777 ${repository}
+        delete_backup "${repository}"
+    fi
+}
+
+get_platform "git@github.com:LeeYoungCN/Platform.git"
 root=$(pwd)
 platform_path=$(cd Platform;pwd)
 template_path="${platform_path}/template"

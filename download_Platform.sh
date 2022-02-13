@@ -60,7 +60,9 @@ function get_platform()
     ssh_path="${1}"
     repository=${ssh_path#*/}
     repository=${repository%*.git}
-    zip_file="${repository}-master.zip"
+    unzip_folder="${repository}-master"
+    zip_file="${unzip_folder}.zip"
+    
     backup_file "${repository}"
     git clone "${ssh_path}"
     if [ $? -eq 0 ]; then
@@ -77,7 +79,7 @@ function get_platform()
         reset_from_backup "${repository}"
         exit
     else
-        mv -f "${zip_file}" "${repository}"
+        mv -f "${unzip_folder}" "${repository}"
         chmod -R 777 ${repository}
         delete_backup "${repository}"
     fi

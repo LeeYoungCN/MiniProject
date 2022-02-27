@@ -181,12 +181,26 @@ function get_platform()
     download_file ${git_zip_link} ${git_zip}
     unzip_file "${git_zip}" "${git_repository}"
     if [ $? -ne 0 ] && [ ! -e ${repository} ]; then
-        exit
+        return 1
     fi
     return 0
 }
 
+if [ $# -gt 0 ]; then
+    if [ -d $1 ]; then
+        pushd $1
+    else
+        cd ..
+    fi
+else
+    cd ..
+fi
+
 get_platform
+if [ $? -ne 0 ]; then
+    exit
+fi
+
 root=$(pwd)
 platform_path=$(cd Platform;pwd)
 template_path="${platform_path}/template"
@@ -197,6 +211,10 @@ fi
 
 copy_all_file ${template_path}
 
-cd ${platform_path}/build
+if [ -e ${root}/script/init_env.sh ]; then
+    cd ${root}/script
+else
+    cd ${platform_path}/script
+fi
+
 ./init_env.sh
-cd ${root}

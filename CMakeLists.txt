@@ -4,8 +4,8 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake)
 set(TARGET_NAME Excutable)
 
 set(CODE_PATH               ${CMAKE_SOURCE_DIR}/code)
-set(BUILDCACHE_PATH         ${CMAKE_SOURCE_DIR}/buildcache)
-set(EXECUTABLE_OUTPUT_PATH  ${CMAKE_SOURCE_DIR}/output)
+set(BUILDCACHE_PATH         ${CMAKE_SOURCE_DIR}/build)
+set(EXECUTABLE_OUTPUT_PATH  ${CMAKE_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH     ${CMAKE_SOURCE_DIR}/lib)
 
 set(PLATFORM_PATH            ${CMAKE_SOURCE_DIR}/Platform)

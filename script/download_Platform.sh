@@ -165,10 +165,9 @@ function download_file()
     result_log "${result}" "${log_str}"
     if [ ${result} -ne 0 ]; then
         rm -rf ${target}
-        return 1
     fi
     process_backup  "${result}" "${target}"
-    return 0
+    return ${result}
 }
 
 function get_platform()

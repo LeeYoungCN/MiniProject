@@ -6,73 +6,15 @@
     },
     "tasks": [
         {
-            "label": "Clean",
-            "options": {
-                "cwd": "${workspaceFolder}/Platform/script/"
-            },
-            "command": "./cmake_clean.sh",
-            "detail": "清除CMake生成文件",
-            "problemMatcher": [
-                "$gcc"
-            ]
-        },
-        {
             "label": "Config & Build",
             "options": {
-                "cwd": "${workspaceFolder}/Platform/script/"
+                "cwd": "${workspaceFolder}/build/"
             },
-            "command": "./cmake_cfg_build.sh",
+            "command": "./build.sh",
             "detail": "使用cmake命令创建makefile,并生成可执行文件",
             "problemMatcher": [
                 "$gcc"
             ]
-        },
-        {
-            "label": "Build",
-            "options": {
-                "cwd": "${workspaceFolder}/Platform/script/"
-            },
-            "command": "./cmake_build.sh",
-            "detail": "根据makefile生成可执行文件和库文件",
-            "problemMatcher": [
-                "$gcc"
-            ]
-        },
-        {
-            "label": "Run",
-            "options": {
-                "cwd": "${workspaceFolder}/Platform/script/"
-            },
-            "command": "./cmake_run.sh",
-            "args": [],
-            "detail": "运行程序",
-            "problemMatcher": [
-                "$gcc"
-            ],
-        },
-        {
-            "label": "Init Env",
-            "options": {
-                "cwd": "${workspaceFolder}/Platform/script/"
-            },
-            "command": "./init_env.sh",
-            "args": [],
-            "detail": "初始化开发环境",
-            "problemMatcher": [
-                "$gcc"
-            ],
-        },
-        {
-            "label": "Download Platform",
-            "options": {
-                "cwd": "${workspaceFolder}/script/"
-            },
-            "command": "./download_Platform.sh",
-            "args": [],
-            "detail": "下载依赖",
-            "problemMatcher": [
-                "$gcc"
-            ],
         },
     ]
 }

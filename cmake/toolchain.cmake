@@ -1,0 +1,8 @@
+if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    set(MINGW_PATH "D:/Program Files/mingw64")
+    set(CMAKE_C_COMPLIER ${MINGW_PATH}/bin/gcc.exe)
+    set(CMAKE_CXX_COMPLIER ${MINGW_PATH}/bin/g++.exe)
+else()
+    set(CMAKE_C_COMPLIER gcc)
+    set(CMAKE_CXX_COMPLIER g++)
+endif()

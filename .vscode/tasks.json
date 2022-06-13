@@ -6,7 +6,7 @@
     },
     "tasks": [
         {
-            "label": "Config & Build",
+            "label": "Build",
             "options": {
                 "cwd": "${workspaceFolder}/build/"
             },
